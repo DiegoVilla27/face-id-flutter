@@ -1,0 +1,9 @@
+{
+  "appName": "Face ID Pro",
+  "loginTitle": "Welcome Back",
+  "loginSubtitle": "Authenticate to continue",
+  "unlockWithFaceId": "Unlock with Face ID",
+  "homeTitle": "Secure Home",
+  "homeWelcome": "Safe surroundings detected",
+  "logout": "Logout"
+}
