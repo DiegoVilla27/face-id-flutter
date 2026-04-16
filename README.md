@@ -114,11 +114,22 @@ lib/
 
 ---
 
+## 🔐 Smart Security & Compatibility
+
+The app includes an intelligent detection engine that adapts to the device's security capabilities:
+- **Biometric Detection**: Automatically detects and offers Face ID or Fingerprint authentication based on available hardware.
+- **Smart Bypass**: For devices without any screen lock (PIN/Biometrics), the app provides a secure bypass flow with a visual warning to ensure functionality while informing about risks.
+- **Android Compatibility**: Refactored to use `FlutterFragmentActivity` for local biometric prompt support across all Android versions.
+
+---
+
 ## ✅ Core Features Implemented
 
 - [x] **Modular Navigation**: GoRouter with automatic Auth-Redirection.
 - [x] **Reactive State**: Functional Riverpod with Annotations.
 - [x] **Premium Design System**: Obsidian Dark Mode with Atomic Design.
+- [x] **Dynamic Hardware Detection**: Intelligent switching between Face ID, Fingerprint, and PIN.
+- [x] **Smart Bypass Flow**: Security warning and bypass logic for unsecured devices.
 - [x] **Semantic Git**: 100% adherence to Conventional Commits.
 - [x] **Agentic Guardrails**: 10 skill-based expert configurations.
 
