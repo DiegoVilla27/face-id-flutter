@@ -1,48 +1,140 @@
-# Face ID Flutter - Advanced Biometric Authentication
+# 🛡️ Face ID Pro: Advanced Biometric Ecosystem
 
-A state-of-the-art Flutter project focused on implementing a robust, secure, and premium Face ID / Biometric authentication experience. This project serves as a showcase of elite mobile engineering practices, combining high-end architecture with "Agentic" development capabilities.
+[![Flutter](https://img.shields.io/badge/Flutter-v3.11+-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-v3.0+-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
+[![Architecture](https://img.shields.io/badge/Architecture-CleanArch-success?style=for-the-badge)](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-## 🚀 The Agent Ecosystem
-
-This project is built using a specialized **Agent Skill Ecosystem**. We have integrated 10 localized AI expert profiles that govern the development lifecycle, ensuring production-grade quality in every line of code.
-
-### 🧠 Our Digital Specialists
-
-| Agent | Focus Area | Key Responsibilities |
-| :--- | :--- | :--- |
-| **Architect Pro** | System Design | Modular GoRouter, Atomic Scoping, Layout Orchestration. |
-| **Biometrics Expert** | Core Auth | `local_auth` lifecycle, hardware error handling, fallback flows. |
-| **Security Architect** | Data Safety | Secure storage, keychain management, token encryption. |
-| **UI/UX Specialist** | Premium Experience | Micro-interactions, haptics, Glassmorphism, and loading states. |
-| **Riverpod Expert** | State Management | Functional reactive programming, code generation (@riverpod). |
-| **Performance Pro** | Optimization | 60/120 FPS consistency, memory leak prevention, Isolate usage. |
-| **Testing Expert** | Quality Assurance | Unit, Widget, and Golden tests; mocking hardware dependencies. |
-| **Clean Code Expert** | Engineering Standards | SOLID, DRY, KISS, and YAGNI principles implementation. |
-| **Platform Configurator** | Native Integration | AndroidManifest, Info.plist, and native bridge management. |
-| **Commits Expert** | History Integrity | Strict adherence to Conventional Commits for semantic history. |
-
-## 🏗 Architecture & Design Patterns
-
-- **Atomic Scoping**: Strict distinction between global (`lib/ui/`) and local (`lib/screens/widgets/`) components.
-- **Modular Routing**: Organized navigation system using `go_router` with categorical separation (Public, Private, Common).
-- **Functional Reactive State**: Powered by Riverpod with full code generation for type safety and reduced boilerplate.
-- **Clean Code Pipeline**: Rigorous linting and architectural boundaries to keep orchestrators under 200 lines.
-
-## 🛠 Tech Stack
-
-- **Framework**: Flutter (Dart)
-- **State Management**: Riverpod (Annotated/Generated)
-- **Navigation**: GoRouter
-- **Authentication**: Local Auth (FaceID / Fingerprint)
-- **Persistence**: Flutter Secure Storage
-- **Testing**: Mocktail, Golden Toolkit
-
-## 📖 Development Workflow
-
-1. **Skill Activation**: Agents automatically scan `.agents/skills/` to apply relevant architectural rules to each task.
-2. **Code Generation**: Run `dart run build_runner watch` to maintain the reactive state engine.
-3. **Semantic Commits**: All changes are tracked via Conventional Commits (e.g., `feat(auth): ...`, `perf(ui): ...`).
+A high-performance, ultra-secure Flutter application demonstrating **State-of-the-Art** Face ID and biometric authentication flows. This repository isn't just a project; it's a blueprint for **Enterprise-Grade** mobile development using a decentralized **Agentic Expert Ecosystem**.
 
 ---
 
-*Built with passion for perfection and engineering excellence.*
+## 🏗 High-Level Architecture
+
+Our project follows a strict **Domain-Driven Design (DDD)** inspired approach, localized for Flutter's reactive nature.
+
+```mermaid
+graph TD
+    A[UI Layer: Atoms/Molecules] --> B[Screens Layer: Public/Private]
+    B --> C[Router: GoRouter Config]
+    C --> D[Domain Layer: Riverpod Notifiers]
+    D --> E[Data Layer: Services & Repositories]
+    E --> F[Native Interface: Local Auth & Secure Storage]
+```
+
+---
+
+## 🧠 Agentic Expert Ecosystem
+
+This repository is governed by **10 Specialized AI Agents**. Each agent enforces strict architectural, security, and performance rules defined in `.agents/skills/`.
+
+| Expert | Core Objective |
+| :--- | :--- |
+| **Architect Pro** | Modular routing and directory orchestration. |
+| **Biometrics Expert** | Hardware lifecycle and fail-safe authentication. |
+| **Security Architect** | Vault-level persistence and encryption. |
+| **UI/UX Specialist** | Premium aesthetic (Obsidian/Glass theme). |
+| **Riverpod Expert** | Functional reactive state management. |
+| **Performance Pro** | 120 FPS target and memory leakage prevention. |
+| **Testing Expert** | Regression-proof code via Piramidal Testing. |
+| **Clean Code Expert** | SOLID, DRY, and KISS enforcement. |
+| **Platform Configurator** | Native bridge (Swift/Kotlin) and permissions. |
+| **Commits Expert** | Semantic and actionable Git history. |
+
+---
+
+## 🛠 Prerequisites
+
+Before you begin, ensure you have the following installed:
+- **Flutter SDK**: `^3.11.1` ([Install Guide](https://docs.flutter.dev/get-started/install))
+- **Git**: Latest version
+- **CocoaPods** (for iOS/macOS): Latest version
+- **Android Studio / Xcode**: For native emulators and build tools.
+
+---
+
+## 🚀 Getting Started
+
+Follow these steps to get your development environment running perfectly:
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/DiegoVilla27/face-id-flutter.git
+cd face-id-flutter
+```
+
+### 2. Install Project Dependencies
+```bash
+flutter pub get
+```
+
+### 3. Initialize Native Configurations (iOS only)
+```bash
+cd ios
+pod install
+cd ..
+```
+
+### 4. Generate Localizations (l10n)
+Our project uses explicit localization generation:
+```bash
+flutter gen-l10n
+```
+
+### 5. Start the State-Engine Generator
+Riverpod annotations require code generation. Run this in a separate terminal:
+```bash
+dart run build_runner build --delete-conflicting-outputs
+```
+> [!TIP]
+> Use `dart run build_runner watch` during development to auto-generate files on save.
+
+### 6. Run the Application
+```bash
+flutter run
+```
+
+---
+
+## 📁 Project Structure (Modular Layout)
+
+```text
+lib/
+├── core/
+│   ├── extensions/    # BuildContext helpers (l10n, theme, ds)
+│   └── router/        # GoRouter modular definitions (config, names)
+├── l10n/              # ARB files & Generated output
+├── screens/
+│   ├── private/       # Auth-guarded screens (Home)
+│   └── public/        # Open-access screens (Login)
+├── services/          # Business logic & Riverpod Providers
+└── ui/
+    └── atoms/         # Design Tokens (Colors, Spacers, Typography)
+```
+
+---
+
+## ✅ Core Features Implemented
+
+- [x] **Modular Navigation**: GoRouter with automatic Auth-Redirection.
+- [x] **Reactive State**: Functional Riverpod with Annotations.
+- [x] **Premium Design System**: Obsidian Dark Mode with Atomic Design.
+- [x] **Semantic Git**: 100% adherence to Conventional Commits.
+- [x] **Agentic Guardrails**: 10 skill-based expert configurations.
+
+---
+
+## ⚠️ Troubleshooting
+
+- **"l10n package and imports not found"**: Ensure you run `flutter gen-l10n`.
+- **"g.dart files missing"**: Run `dart run build_runner build`.
+- **"CocoaPods could not find compatible versions"**: Run `cd ios && rm -rf Pods Podfile.lock && pod install`.
+
+---
+
+## 📄 License
+
+Distributed under the **MIT License**. See `LICENSE` for more information.
+
+---
+*Developed with the precision of AI and the passion of Human Engineering.*
