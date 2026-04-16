@@ -8,27 +8,61 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isBiometricsEnabled = ref.watch(isBiometricsEnabledProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.homeTitle),
         actions: [
           IconButton(
-            onPressed: () {
-              ref.read(authNotifierProvider.notifier).logout();
-            },
+            onPressed: () => ref.read(authNotifierProvider.notifier).logout(),
             icon: const Icon(Icons.logout),
+            tooltip: context.l10n.logout,
           ),
         ],
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.security, size: 100, color: Colors.green),
-            const SizedBox(height: 24),
             Text(
               context.l10n.homeWelcome,
-              style: context.typography.titleLarge,
+              style: context.typography.headlineSmall,
+            ),
+            const SizedBox(height: 32),
+            
+            // Security Settings Card
+            Card(
+              child: Column(
+                children: [
+                  SwitchListTile(
+                    title: const Text('Biometric Authentication'),
+                    subtitle: const Text('Use Face ID or Fingerprint for faster access'),
+                    value: isBiometricsEnabled,
+                    onChanged: (value) {
+                      ref.read(authNotifierProvider.notifier).toggleBiometrics(value);
+                    },
+                    secondary: const Icon(Icons.fingerprint),
+                  ),
+                ],
+              ),
+            ),
+            
+            const Spacer(),
+            
+            // App Information
+            Center(
+              child: Column(
+                children: [
+                  const Icon(Icons.security, size: 48, color: Colors.blueGrey),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Vault Protected',
+                    style: TextStyle(color: context.colors.outline),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

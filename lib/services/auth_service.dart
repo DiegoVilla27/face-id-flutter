@@ -1,43 +1,106 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'biometric_service.dart';
+import 'storage_service.dart';
 
 part 'auth_service.g.dart';
+
+enum AuthStatus {
+  unauthenticated,
+  authenticated,
+  waitingForBiometrics,
+}
 
 @riverpod
 class AuthNotifier extends _$AuthNotifier {
   @override
-  AsyncValue<bool> build() => const AsyncValue.data(false);
+  AsyncValue<AuthStatus> build() {
+    _checkPersistedAuth();
+    return const AsyncValue.loading();
+  }
 
-  Future<void> login() async {
+  Future<void> _checkPersistedAuth() async {
+    try {
+      final storage = await ref.read(storageServiceProvider.future);
+      final token = await storage.getToken();
+      
+      if (token == null) {
+        state = const AsyncValue.data(AuthStatus.unauthenticated);
+        return;
+      }
+
+      // If token exists, check if biometrics are mandatory
+      final isBioEnabled = storage.isBiometricsEnabled();
+      if (isBioEnabled) {
+        state = const AsyncValue.data(AuthStatus.waitingForBiometrics);
+      } else {
+        state = const AsyncValue.data(AuthStatus.authenticated);
+      }
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
+  }
+
+  /// Manual Login with Email/Password (Mock)
+  Future<void> loginWithPassword({
+    required String email,
+    required String password,
+  }) async {
     state = const AsyncValue.loading();
+    await Future.delayed(const Duration(seconds: 1));
     
-    final biometricService = ref.read(biometricServiceProvider.notifier);
+    if (email == 'admin@pro.com' && password == 'admin123') {
+      final storage = await ref.read(storageServiceProvider.future);
+      await storage.saveToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy.token");
+      state = const AsyncValue.data(AuthStatus.authenticated);
+    } else {
+      state = AsyncValue.error('Invalid credentials', StackTrace.current);
+    }
+  }
+
+  /// Biometric Login
+  Future<void> loginWithBiometrics() async {
+    final storage = await ref.read(storageServiceProvider.future);
+    final token = await storage.getToken();
     
-    // Check what we have available
-    final authType = await ref.read(authTypeProvider.future);
-    
-    // If device is insecure (none), bypass authentication with a direct success
-    if (authType == AppAuthType.none) {
-      state = const AsyncValue.data(true);
+    if (token == null) {
+      state = const AsyncValue.data(AuthStatus.unauthenticated);
       return;
     }
 
-    // We allow biometricOnly: false if the device only supports PIN/Pattern
-    final bool biometricOnly = authType != AppAuthType.pin;
-
+    state = const AsyncValue.loading();
+    final biometricService = ref.read(biometricServiceProvider.notifier);
+    final authType = await ref.read(authTypeProvider.future);
+    
     final bool isAuthenticated = await biometricService.authenticate(
       localizedReason: 'Authenticate to access your secure vault',
-      biometricOnly: biometricOnly,
+      biometricOnly: authType != AppAuthType.pin,
     );
     
     if (isAuthenticated) {
-      state = const AsyncValue.data(true);
+      state = const AsyncValue.data(AuthStatus.authenticated);
     } else {
-      state = AsyncValue.error('Authentication failed', StackTrace.current);
+      // If biometrics fail, we stay in waiting state (or whatever current state was)
+      state = const AsyncValue.data(AuthStatus.waitingForBiometrics);
+      state = AsyncValue.error('Biometric verification failed', StackTrace.current);
     }
   }
 
-  void logout() {
-    state = const AsyncValue.data(false);
+  Future<void> logout() async {
+    state = const AsyncValue.loading();
+    final storage = await ref.read(storageServiceProvider.future);
+    await storage.deleteToken();
+    state = const AsyncValue.data(AuthStatus.unauthenticated);
   }
+
+  Future<void> toggleBiometrics(bool enabled) async {
+    final storage = await ref.read(storageServiceProvider.future);
+    await storage.setBiometricsEnabled(enabled);
+    ref.invalidate(isBiometricsEnabledProvider);
+  }
+}
+
+@riverpod
+bool isBiometricsEnabled(IsBiometricsEnabledRef ref) {
+  final storage = ref.watch(storageServiceProvider).valueOrNull;
+  return storage?.isBiometricsEnabled() ?? false;
 }

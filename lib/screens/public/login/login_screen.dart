@@ -4,51 +4,89 @@ import '../../../core/extensions/context_extensions.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/biometric_service.dart';
 
-class LoginScreen extends ConsumerWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final _emailController = TextEditingController(text: 'admin@pro.com');
+  final _passwordController = TextEditingController(text: 'admin123');
+
+  @override
+  void initState() {
+    super.initState();
+    // Auto-trigger biometrics if waiting
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAutoBiometrics();
+    });
+  }
+
+  Future<void> _checkAutoBiometrics() async {
+    final authState = ref.read(authNotifierProvider).valueOrNull;
+    
+    // Auto-trigger ONLY if state is waitingForBiometrics
+    if (authState == AuthStatus.waitingForBiometrics) {
+      ref.read(authNotifierProvider.notifier).loginWithBiometrics();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final authState = ref.watch(authNotifierProvider);
     final authType = ref.watch(authTypeProvider);
 
     return Scaffold(
       body: Center(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                context.l10n.loginTitle,
-                style: context.typography.headlineLarge,
+              Text(context.l10n.loginTitle, style: context.typography.headlineLarge),
+              const SizedBox(height: 12),
+              Text(context.l10n.loginSubtitle, style: context.typography.bodyLarge, textAlign: TextAlign.center),
+              const SizedBox(height: 48),
+              
+              // Login Form
+              TextField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'Email', border: OutlineInputBorder()),
               ),
               const SizedBox(height: 16),
-              Text(
-                context.l10n.loginSubtitle,
-                style: context.typography.bodyLarge,
-                textAlign: TextAlign.center,
+              TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Password', border: OutlineInputBorder()),
               ),
-              const SizedBox(height: 40),
-              
-              // Security Warning Molecule
-              authType.maybeWhen(
-                data: (type) => type == AppAuthType.none 
-                  ? const _SecurityWarning() 
-                  : const SizedBox.shrink(),
-                orElse: () => const SizedBox.shrink(),
+              const SizedBox(height: 24),
+
+              // Action Button
+              authState.maybeWhen(
+                loading: () => const CircularProgressIndicator.adaptive(),
+                orElse: () => SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      ref.read(authNotifierProvider.notifier).loginWithPassword(
+                        email: _emailController.text,
+                        password: _passwordController.text,
+                      );
+                    },
+                    child: const Text('Login'),
+                  ),
+                ),
               ),
 
               const SizedBox(height: 16),
               
-              // Dynamic Auth Button
-              authState.maybeWhen(
-                loading: () => const CircularProgressIndicator.adaptive(),
-                orElse: () => authType.when(
-                  data: (type) => _AuthButton(type: type),
-                  loading: () => const CircularProgressIndicator.adaptive(),
-                  error: (_, __) => _AuthButton(type: AppAuthType.none),
-                ),
+              // Biometric Shortcut (Always show if hardware supports it, but action depends on state)
+              authType.maybeWhen(
+                data: (type) => _AuthButton(type: type),
+                orElse: () => const SizedBox.shrink(),
               ),
               
               if (authState.hasError) ...[
@@ -58,39 +96,6 @@ class LoginScreen extends ConsumerWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _SecurityWarning extends StatelessWidget {
-  const _SecurityWarning();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.orange.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        children: [
-          const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 32),
-          const SizedBox(height: 12),
-          Text(
-            context.l10n.insecureDeviceWarning,
-            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.orange),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            context.l10n.continueAtYourOwnRisk,
-            style: TextStyle(color: Colors.orange.withValues(alpha: 0.8), fontSize: 12),
-            textAlign: TextAlign.center,
-          ),
-        ],
       ),
     );
   }
@@ -112,12 +117,7 @@ class _ErrorBanner extends StatelessWidget {
         children: [
           Icon(Icons.error_outline, color: context.colors.error),
           const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              message,
-              style: TextStyle(color: context.colors.error, fontSize: 13),
-            ),
-          ),
+          Expanded(child: Text(message, style: TextStyle(color: context.colors.error, fontSize: 13))),
         ],
       ),
     );
@@ -126,7 +126,6 @@ class _ErrorBanner extends StatelessWidget {
 
 class _AuthButton extends ConsumerWidget {
   final AppAuthType type;
-
   const _AuthButton({required this.type});
 
   @override
@@ -135,29 +134,16 @@ class _AuthButton extends ConsumerWidget {
     final String label;
 
     switch (type) {
-      case AppAuthType.face:
-        icon = Icons.face;
-        label = context.l10n.unlockWithFaceId;
-      case AppAuthType.fingerprint:
-        icon = Icons.fingerprint;
-        label = context.l10n.unlockWithFingerprint;
-      case AppAuthType.pin:
-        icon = Icons.grid_view_sharp;
-        label = context.l10n.unlockWithPin;
-      case AppAuthType.none:
-        icon = Icons.no_encryption_gmailerrorred_rounded;
-        label = context.l10n.enterUnsecured;
+      case AppAuthType.face: icon = Icons.face; label = context.l10n.unlockWithFaceId;
+      case AppAuthType.fingerprint: icon = Icons.fingerprint; label = context.l10n.unlockWithFingerprint;
+      case AppAuthType.pin: icon = Icons.grid_view_sharp; label = context.l10n.unlockWithPin;
+      case AppAuthType.none: icon = Icons.no_encryption_gmailerrorred_rounded; label = context.l10n.enterUnsecured;
     }
 
-    return ElevatedButton.icon(
-      onPressed: () {
-        ref.read(authNotifierProvider.notifier).login();
-      },
+    return TextButton.icon(
+      onPressed: () => ref.read(authNotifierProvider.notifier).loginWithBiometrics(),
       icon: Icon(icon),
       label: Text(label),
-      style: type == AppAuthType.none 
-        ? ElevatedButton.styleFrom(backgroundColor: Colors.orange, foregroundColor: Colors.black)
-        : null,
     );
   }
 }
