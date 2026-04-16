@@ -3,6 +3,9 @@
   "loginTitle": "Welcome Back",
   "loginSubtitle": "Authenticate to continue",
   "unlockWithFaceId": "Unlock with Face ID",
+  "unlockWithFingerprint": "Unlock with Fingerprint",
+  "unlockWithPin": "Unlock with Device PIN",
+  "unlockDevice": "Unlock Device",
   "homeTitle": "Secure Home",
   "homeWelcome": "Safe surroundings detected",
   "logout": "Logout"

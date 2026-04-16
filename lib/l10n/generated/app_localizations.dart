@@ -122,6 +122,24 @@ abstract class AppLocalizations {
   /// **'Unlock with Face ID'**
   String get unlockWithFaceId;
 
+  /// No description provided for @unlockWithFingerprint.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock with Fingerprint'**
+  String get unlockWithFingerprint;
+
+  /// No description provided for @unlockWithPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock with Device PIN'**
+  String get unlockWithPin;
+
+  /// No description provided for @unlockDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock Device'**
+  String get unlockDevice;
+
   /// No description provided for @homeTitle.
   ///
   /// In en, this message translates to:

@@ -6,7 +6,21 @@ part of 'biometric_service.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$biometricServiceHash() => r'f675b3bc7231a23954f03baee31075574d8598b5';
+String _$authTypeHash() => r'0bedcc7fc15aba669dfb3db870d728159ed34d7e';
+
+/// See also [authType].
+@ProviderFor(authType)
+final authTypeProvider = AutoDisposeFutureProvider<AppAuthType>.internal(
+  authType,
+  name: r'authTypeProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$authTypeHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef AuthTypeRef = AutoDisposeFutureProviderRef<AppAuthType>;
+String _$biometricServiceHash() => r'4d552df63d0c24c79cc4cccb10b4f91375bc03c6';
 
 /// See also [BiometricService].
 @ProviderFor(BiometricService)

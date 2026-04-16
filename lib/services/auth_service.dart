@@ -8,24 +8,26 @@ class AuthNotifier extends _$AuthNotifier {
   @override
   AsyncValue<bool> build() => const AsyncValue.data(false);
 
-  Future<void> loginWithBiometrics({required String reason}) async {
+  Future<void> login() async {
     state = const AsyncValue.loading();
     
     final biometricService = ref.read(biometricServiceProvider.notifier);
-    final bool canCheck = await biometricService.canAuthenticate();
     
-    if (canCheck) {
-      final bool isAuthenticated = await biometricService.authenticate(
-        localizedReason: reason,
-      );
-      
-      if (isAuthenticated) {
-        state = const AsyncValue.data(true);
-      } else {
-        state = AsyncValue.error('Authentication failed: Could not verify identity.', StackTrace.current);
-      }
+    // Check what we have available
+    final authType = await ref.read(authTypeProvider.future);
+    
+    // We allow biometricOnly: false if the device only supports PIN/Pattern
+    final bool biometricOnly = authType != AppAuthType.pin;
+
+    final bool isAuthenticated = await biometricService.authenticate(
+      localizedReason: 'Authenticate to access your secure vault',
+      biometricOnly: biometricOnly,
+    );
+    
+    if (isAuthenticated) {
+      state = const AsyncValue.data(true);
     } else {
-      state = AsyncValue.error('Biometrics not available: Ensure Face ID is enrolled in Simulator features.', StackTrace.current);
+      state = AsyncValue.error('Authentication failed', StackTrace.current);
     }
   }
 

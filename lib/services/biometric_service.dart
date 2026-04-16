@@ -3,6 +3,13 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'biometric_service.g.dart';
 
+enum AppAuthType {
+  face,
+  fingerprint,
+  pin,
+  none,
+}
+
 @riverpod
 class BiometricService extends _$BiometricService {
   late final LocalAuthentication _auth;
@@ -19,24 +26,46 @@ class BiometricService extends _$BiometricService {
     return canAuthenticateWithBiometrics && isDeviceSupported;
   }
 
-  /// Returns a list of available biometric types (face, fingerprint, etc.).
-  Future<List<BiometricType>> getAvailableBiometrics() async {
-    return await _auth.getAvailableBiometrics();
+  /// Detects the strongest available authentication method.
+  Future<AppAuthType> getAvailableAuthType() async {
+    final bool canCheck = await _auth.canCheckBiometrics;
+    final bool isSupported = await _auth.isDeviceSupported();
+    
+    if (!canCheck && !isSupported) return AppAuthType.none;
+
+    final List<BiometricType> availableBiometrics = await _auth.getAvailableBiometrics();
+    
+    if (availableBiometrics.contains(BiometricType.face)) {
+      return AppAuthType.face;
+    } else if (availableBiometrics.contains(BiometricType.fingerprint)) {
+      return AppAuthType.fingerprint;
+    } else if (isSupported) {
+      return AppAuthType.pin;
+    }
+    
+    return AppAuthType.none;
   }
 
   /// Performs the actual authentication.
-  Future<bool> authenticate({required String localizedReason}) async {
+  Future<bool> authenticate({
+    required String localizedReason,
+    bool biometricOnly = true,
+  }) async {
     try {
       return await _auth.authenticate(
         localizedReason: localizedReason,
-        options: const AuthenticationOptions(
+        options: AuthenticationOptions(
           stickyAuth: true,
-          biometricOnly: true,
+          biometricOnly: biometricOnly,
         ),
       );
     } catch (e) {
-      // Logic for handling lockout or specific errors can go here
       return false;
     }
   }
+}
+
+@riverpod
+Future<AppAuthType> authType(AuthTypeRef ref) {
+  return ref.watch(biometricServiceProvider.notifier).getAvailableAuthType();
 }

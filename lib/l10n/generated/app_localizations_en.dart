@@ -21,6 +21,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unlockWithFaceId => 'Unlock with Face ID';
 
   @override
+  String get unlockWithFingerprint => 'Unlock with Fingerprint';
+
+  @override
+  String get unlockWithPin => 'Unlock with Device PIN';
+
+  @override
+  String get unlockDevice => 'Unlock Device';
+
+  @override
   String get homeTitle => 'Secure Home';
 
   @override
