@@ -9,7 +9,8 @@ part 'router_config.g.dart';
 
 @riverpod
 GoRouter routerConfig(RouterConfigRef ref) {
-  final bool isLogged = ref.watch(authNotifierProvider);
+  final authState = ref.watch(authNotifierProvider);
+  final bool isLogged = authState.valueOrNull == true;
 
   return GoRouter(
     initialLocation: AppRoutes.login,
