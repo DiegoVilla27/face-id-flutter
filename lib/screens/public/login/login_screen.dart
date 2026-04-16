@@ -29,7 +29,18 @@ class LoginScreen extends ConsumerWidget {
                 style: context.typography.bodyLarge,
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 48),
+              const SizedBox(height: 40),
+              
+              // Security Warning Molecule
+              authType.maybeWhen(
+                data: (type) => type == AppAuthType.none 
+                  ? const _SecurityWarning() 
+                  : const SizedBox.shrink(),
+                orElse: () => const SizedBox.shrink(),
+              ),
+
+              const SizedBox(height: 16),
+              
               // Dynamic Auth Button
               authState.maybeWhen(
                 loading: () => const CircularProgressIndicator.adaptive(),
@@ -39,31 +50,75 @@ class LoginScreen extends ConsumerWidget {
                   error: (_, __) => _AuthButton(type: AppAuthType.none),
                 ),
               ),
+              
               if (authState.hasError) ...[
                 const SizedBox(height: 24),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: context.colors.error.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.error_outline, color: context.colors.error),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          authState.error.toString(),
-                          style: TextStyle(color: context.colors.error, fontSize: 13),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                _ErrorBanner(message: authState.error.toString()),
               ],
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _SecurityWarning extends StatelessWidget {
+  const _SecurityWarning();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.orange.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        children: [
+          const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 32),
+          const SizedBox(height: 12),
+          Text(
+            context.l10n.insecureDeviceWarning,
+            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.orange),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            context.l10n.continueAtYourOwnRisk,
+            style: TextStyle(color: Colors.orange.withValues(alpha: 0.8), fontSize: 12),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ErrorBanner extends StatelessWidget {
+  final String message;
+  const _ErrorBanner({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: context.colors.error.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.error_outline, color: context.colors.error),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              message,
+              style: TextStyle(color: context.colors.error, fontSize: 13),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -90,8 +145,8 @@ class _AuthButton extends ConsumerWidget {
         icon = Icons.grid_view_sharp;
         label = context.l10n.unlockWithPin;
       case AppAuthType.none:
-        icon = Icons.lock_open;
-        label = context.l10n.unlockDevice;
+        icon = Icons.no_encryption_gmailerrorred_rounded;
+        label = context.l10n.enterUnsecured;
     }
 
     return ElevatedButton.icon(
@@ -100,6 +155,9 @@ class _AuthButton extends ConsumerWidget {
       },
       icon: Icon(icon),
       label: Text(label),
+      style: type == AppAuthType.none 
+        ? ElevatedButton.styleFrom(backgroundColor: Colors.orange, foregroundColor: Colors.black)
+        : null,
     );
   }
 }

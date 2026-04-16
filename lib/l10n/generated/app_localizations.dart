@@ -157,6 +157,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Logout'**
   String get logout;
+
+  /// No description provided for @insecureDeviceWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Your device is not secured with a PIN or biometrics.'**
+  String get insecureDeviceWarning;
+
+  /// No description provided for @enterUnsecured.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter anyway (Unsecured)'**
+  String get enterUnsecured;
+
+  /// No description provided for @continueAtYourOwnRisk.
+  ///
+  /// In en, this message translates to:
+  /// **'Continuing without device security puts your data at risk.'**
+  String get continueAtYourOwnRisk;
 }
 
 class _AppLocalizationsDelegate

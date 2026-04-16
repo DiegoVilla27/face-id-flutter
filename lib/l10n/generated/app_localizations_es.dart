@@ -37,4 +37,15 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get logout => 'Cerrar sesión';
+
+  @override
+  String get insecureDeviceWarning =>
+      'Tu dispositivo no tiene PIN ni biometría configurada.';
+
+  @override
+  String get enterUnsecured => 'Entrar sin protección';
+
+  @override
+  String get continueAtYourOwnRisk =>
+      'Continuar sin seguridad en el dispositivo pone en riesgo tus datos.';
 }

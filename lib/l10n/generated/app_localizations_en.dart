@@ -37,4 +37,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get logout => 'Logout';
+
+  @override
+  String get insecureDeviceWarning =>
+      'Your device is not secured with a PIN or biometrics.';
+
+  @override
+  String get enterUnsecured => 'Enter anyway (Unsecured)';
+
+  @override
+  String get continueAtYourOwnRisk =>
+      'Continuing without device security puts your data at risk.';
 }

@@ -8,5 +8,8 @@
   "unlockDevice": "Unlock Device",
   "homeTitle": "Secure Home",
   "homeWelcome": "Safe surroundings detected",
-  "logout": "Logout"
+  "logout": "Logout",
+  "insecureDeviceWarning": "Your device is not secured with a PIN or biometrics.",
+  "enterUnsecured": "Enter anyway (Unsecured)",
+  "continueAtYourOwnRisk": "Continuing without device security puts your data at risk."
 }

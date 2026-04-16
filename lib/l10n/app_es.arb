@@ -8,5 +8,8 @@
   "unlockDevice": "Desbloquear Dispositivo",
   "homeTitle": "Inicio Seguro",
   "homeWelcome": "Entorno seguro detectado",
-  "logout": "Cerrar sesión"
+  "logout": "Cerrar sesión",
+  "insecureDeviceWarning": "Tu dispositivo no tiene PIN ni biometría configurada.",
+  "enterUnsecured": "Entrar sin protección",
+  "continueAtYourOwnRisk": "Continuar sin seguridad en el dispositivo pone en riesgo tus datos."
 }

@@ -16,6 +16,12 @@ class AuthNotifier extends _$AuthNotifier {
     // Check what we have available
     final authType = await ref.read(authTypeProvider.future);
     
+    // If device is insecure (none), bypass authentication with a direct success
+    if (authType == AppAuthType.none) {
+      state = const AsyncValue.data(true);
+      return;
+    }
+
     // We allow biometricOnly: false if the device only supports PIN/Pattern
     final bool biometricOnly = authType != AppAuthType.pin;
 
